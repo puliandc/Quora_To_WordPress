@@ -1,19 +1,19 @@
-document.getElementById('copy-button').addEventListener('click', function() {
-    console.log('Copy button clicked');
-    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      console.log('Sending getHTML message');
-      chrome.tabs.sendMessage(tabs[0].id, {action: "getHTML"}, function(response) {
-        if (response && response.html) {
-          console.log('Received response:', response.html);
-          navigator.clipboard.writeText(response.html).then(function() {
-            console.log('Copying to clipboard was successful!');
-          }, function(err) {
-            console.error('Could not copy text: ', err);
-          });
-        } else {
-          console.log('No response or no HTML in response');
-        }
-      });
+// popup.js
+function copyToClipboard(text) {
+    var input = document.createElement('textarea');
+    input.innerHTML = text;
+    document.body.appendChild(input);
+    input.select();
+    var result = document.execCommand('copy');
+    document.body.removeChild(input)
+    return result;
+  }
+  
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {message: "clicked_browser_action"}, function(response) {
+      let title = response.title;
+      let text = response.text;
+      copyToClipboard(title + '\n\n' + text);
     });
   });
   
